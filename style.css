@@ -230,7 +230,6 @@ dl.facts dd { margin: 0; font-weight: 500; }
 .row b { font-size: 32px; font-weight: 500; color: #fff; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .note { margin: 12px 0 0; font-size: var(--fs-body); color: rgba(255, 255, 255, .78); }
 .other { margin: 0; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .16); color: rgba(255, 255, 255, .8); }
-.oferta { margin: 0; font-size: var(--fs-small); color: rgba(255, 255, 255, .6); }
 .rules { align-self: start; padding: 32px; border-radius: var(--radius); background: rgba(255, 255, 255, .06); }
 .rules ol, .rules ul { margin: 16px 0 32px; padding-left: 20px; line-height: 1.6; color: rgba(255, 255, 255, .85); }
 .rules li { margin: 8px 0; }
