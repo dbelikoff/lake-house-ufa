@@ -4,6 +4,14 @@
   var PHONE = '79174860151';
   var MAX_GUESTS = 30;
 
+  // Занятые ночи: дата заезда, ночь с этого числа на следующее. Обновлять здесь.
+  // Прислал Чингиз 21 ноя 2026, 31 дек и 1 янв это бронь на две ночи.
+  var BUSY = [
+    '2026-11-21', '2026-11-22', '2026-11-28',
+    '2026-12-05', '2026-12-12', '2026-12-19', '2026-12-25', '2026-12-26', '2026-12-31',
+    '2027-01-01'
+  ];
+
   var GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   var NOM = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
   var WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
@@ -23,8 +31,16 @@
   var phone = window.matchMedia('(max-width: 899px)').matches;
   var COUNT = phone ? 90 : 14;
   var page = 0;
+  function isBusy(d) { return BUSY.indexOf(iso(d)) !== -1; }
+  // Все ночи с a до b свободны (b это день выезда, его ночь не считается)
+  function free(a, b) {
+    for (var x = new Date(a); x < b; x = addDays(x, 1)) if (isBusy(x)) return false;
+    return true;
+  }
+  // По умолчанию ближайшие свободные выходные: с пятницы две ночи, если суббота занята, одна
   var start = addDays(today, (5 - today.getDay() + 7) % 7 || 7); // ближайшая пятница
-  var end = addDays(start, 2);
+  while (isBusy(start)) start = addDays(start, 1);
+  var end = addDays(start, isBusy(addDays(start, 1)) ? 1 : 2);
   var guests = 15;
   var touched = false;
 
@@ -42,6 +58,7 @@
       b.innerHTML = '<span class="wd">' + WD[d.getDay()] + '</span><span class="dn">' + d.getDate() + '</span>';
       b.setAttribute('aria-label', d.getDate() + ' ' + GEN[d.getMonth()]);
       if (d < today) { b.classList.add('is-past'); b.disabled = true; }
+      else if (isBusy(d)) { b.classList.add('is-busy'); b.setAttribute('aria-label', d.getDate() + ' ' + GEN[d.getMonth()] + ', занято'); }
       if (+d === +today) b.classList.add('is-today');
       b.addEventListener('click', function () { pick(d); });
       box.appendChild(b);
@@ -51,10 +68,12 @@
     $('prev').disabled = page === 0;
   }
 
+  // Занятый день можно взять только днем выезда
   function pick(d) {
-    touched = true;
-    if (end === null && d > start) end = d;
+    if (end === null && d > start && free(start, d)) end = d;
+    else if (isBusy(d)) return;
     else { start = d; end = null; }
+    touched = true;
     render();
   }
 
